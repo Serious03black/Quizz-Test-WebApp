@@ -14,7 +14,7 @@ const db = mysql.createConnection({
     password: 'tiger',
     database: 'mcqapp'
 });
-
+\
 db.connect((err) => {
     if (err) throw err;
     console.log('MySQL connected');
@@ -49,7 +49,19 @@ app.post('/api/submit', (req, res) => {
         console.log(result);
     });
 });
+app.post('/api/student', (req, res) => {
+    const { name, div, college, domain } = req.body;
 
+    // Insert student info into the database
+    const sql = 'INSERT INTO students (name, Address, college, domain) VALUES (?, ?, ?, ?)';
+    db.query(sql, [name, Address, college, domain], (err, result) => {
+        if (err) {
+            console.error('Error inserting student data:', err);
+            return res.status(500).json({ error: 'Failed to save student data' });
+        }
+        res.json({ message: 'Student data saved successfully', id: result.insertId });
+    });
+});
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
