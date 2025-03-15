@@ -32,7 +32,7 @@ const ResultPage = () => {
     }
 
     return (
-        <div style={styles.container}>
+        <div style={styles.container} className="">
             <h1>Congratulations!</h1>
             <h2>Your Score: {score}/{results.length}</h2>
             <div style={styles.results}>
@@ -61,6 +61,7 @@ export default ResultPage;
 // Inline styles for the component
 const styles = {
     container: {
+        
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -68,7 +69,7 @@ const styles = {
         fontFamily: 'Arial, sans-serif',
     },
     results: {
-        marginTop: '20px',
+        marginTop: '200px',
     },
     resultItem: {
         marginBottom: '20px',
