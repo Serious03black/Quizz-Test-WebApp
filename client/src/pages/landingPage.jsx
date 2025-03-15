@@ -1,161 +1,73 @@
-/* eslint-disable no-undef */
-import React, { useState } from 'react';
+/* eslint-disable no-unused-vars */
+// src/LandingPage.jsx
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ExamFrom from '../Components/examForm';
+
+gsap.registerPlugin(ScrollTrigger);
+
 const LandingPage = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: '',
-        Address: '',
-        college: '',
-        domain: ''
-    });
+    const canvasRef = useRef(null);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+    // GSAP Animations
+    useEffect(() => {
+        // Hero Section Animation
+        gsap.fromTo(
+            '.header-content',
+            { opacity: 0, y: 200, scale: 0.7 },
+            { opacity: 1, y: 0, scale: 1, duration: 2.5, ease: "power4.out", stagger: 0.4 }
+        );
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        try {
-            // Send student info to the backend
-            const response = await axios.post('http://localhost:5000/api/student', formData);
-            console.log('Student data saved:', response.data);
-            // Save student info to localStorage (optional)
-            localStorage.setItem('studentInfo', JSON.stringify(formData));
-    
-            // Navigate to the test page
-            navigate('/test');
-        } catch (error) {
-            console.error('Error saving student data:', error);
-            alert('Failed to save student data. Please try again.');
-        }
-    };
+        // Get Started Button Animation
+        gsap.fromTo(
+            '.get-started-btn',
+            { opacity: 0, y: 50 },
+            { opacity: 1, y: 0, duration: 1.5, ease: "power3.out", delay: 1 }
+        );
+
+        // Form Section Animation (for when the form is shown)
+        gsap.fromTo(
+            '.form-section',
+            { opacity: 0, y: 150 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                ease: "back.out(2)",
+                scrollTrigger: {
+                    trigger: '.form-section',
+                    start: "top 70%",
+                    end: "bottom 20%",
+                    toggleActions: "play none none reverse",
+                },
+            }
+        );
+    }, []);
 
     return (
-        <div style={styles.container}>
-            <h1 style={styles.heading}>Welcome to the MCQ Test</h1>
-            <p style={styles.subHeading}>Please fill out the form below to start the test.</p>
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Name:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        style={styles.input}
-                        required
-                    />
+        <div className="landing-container relative min-h-screen font-sans bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 overflow-hidden">
+            {/* Header Section */}
+            <header className="header relative z-10 mt-30 text-center py-16 px-5 bg-gradient-to-b from-white to-cyan-50">
+                <div className="header-content max-w-3xl mx-auto">
+                    <h1 className="header-title text-4xl sm:text-5xl font-bold text-teal-900 mb-3 animate-pulse [text-shadow:_0_0_10px_#4db6ac,_0_0_20px_#4db6ac]">
+                        Welcome to CET Pratice Exam 
+                    </h1>
+                    <p className="header-subtitle text-lg sm:text-xl text-gray-600 mb-8">
+                        Empowering Future Innovators
+                    </p>
+                    {/* Get Started Button */}
                 </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Division:</label>
-                    <input
-                        type="text"
-                        name="div"
-                        value={formData.div}
-                        onChange={handleChange}
-                        style={styles.input}
-                        required
-                    />
-                </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>College of 12th:</label>
-                    <input
-                        type="text"
-                        name="college"
-                        value={formData.college}
-                        onChange={handleChange}
-                        style={styles.input}
-                        required
-                    />
-                </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Interested Domain:</label>
-                    <select
-                        name="domain"
-                        value={formData.domain}
-                        onChange={handleChange}
-                        style={styles.input}
-                        required
-                    >
-                        <option value="">Select Domain</option>
-                        <option value="CSE">Computer Science Engineering (CSE)</option>
-                        <option value="Civil">Civil Engineering</option>
-                        <option value="Mechanical">Mechanical Engineering</option>
-                        <option value="Electrical">Electrical Engineering</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <button type="submit" style={styles.button}>Start Test</button>
-            </form>
+            </header>
+
+            {/* Form Section */}
+            <ExamFrom />
         </div>
     );
 };
 
 export default LandingPage;
-
-// Inline styles for the component
-const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#f0f4f8',
-        padding: '20px',
-        fontFamily: 'Arial, sans-serif',
-    },
-    heading: {
-        fontSize: '2.5rem',
-        color: '#333',
-        marginBottom: '10px',
-    },
-    subHeading: {
-        fontSize: '1.2rem',
-        color: '#666',
-        marginBottom: '30px',
-    },
-    form: {
-        backgroundColor: '#fff',
-        padding: '20px',
-        borderRadius: '10px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        width: '100%',
-        maxWidth: '400px',
-    },
-    formGroup: {
-        marginBottom: '20px',
-    },
-    label: {
-        display: 'block',
-        fontSize: '1rem',
-        color: '#555',
-        marginBottom: '5px',
-    },
-    input: {
-        width: '100%',
-        padding: '10px',
-        fontSize: '1rem',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-        outline: 'none',
-    },
-    button: {
-        width: '100%',
-        padding: '10px',
-        fontSize: '1rem',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s ease',
-    },
-    buttonHover: {
-        backgroundColor: '#0056b3',
-    },
-};

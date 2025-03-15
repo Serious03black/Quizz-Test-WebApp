@@ -1,34 +1,79 @@
-// src/pages/ResultPage.js
-import React, { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ResultPage = () => {
     const location = useLocation();
-    const { results = [] } = location.state || {};
+    const navigate = useNavigate();
 
-    // Compute score and correctness manually
-    const enhancedResults = useMemo(() => {
-        return results.map(result => ({
-            ...result,
-            isCorrect: result.userAnswer === result.answer
-        }));
-    }, [results]);
+    console.log('Location State:', location.state); // Debugging
+    console.log('Results:', location.state?.results); // Debugging
 
-    const score = enhancedResults.filter(r => r.isCorrect).length;
+    // Fallback if location.state is undefined
+    if (!location.state) {
+        return (
+            <div>
+                <h1>No results found</h1>
+                <button onClick={() => navigate('/')}>Go back to Home</button>
+            </div>
+        );
+    }
+
+    const { score, results } = location.state;
+
+    // Ensure results is an array
+    if (!Array.isArray(results)) {
+        console.error('Results is not an array:', results); // Debugging
+        return (
+            <div>
+                <h1>Invalid results data</h1>
+                <button onClick={() => navigate('/')}>Go back to Home</button>
+            </div>
+        );
+    }
 
     return (
-        <div>
-            <h1>Your Score: {score}/{enhancedResults.length}</h1>
-            {enhancedResults.map((result, index) => (
-                <div key={index}>
-                    <p><strong>Q:</strong> {result.question}</p>
-                    <p><strong>Your Answer:</strong> {result.userAnswer} {result.isCorrect ? '✅' : '❌'}</p>
-                    <p><strong>Correct Answer:</strong> {result.answer}</p>
-                    <hr />
-                </div>
-            ))}
+        <div style={styles.container}>
+            <h1>Congratulations!</h1>
+            <h2>Your Score: {score}/{results.length}</h2>
+            <div style={styles.results}>
+                {results.map((result, index) => {
+                    // Ensure result is an object and has the required properties
+                    if (!result || typeof result !== 'object') {
+                        console.error('Invalid result at index:', index, result); // Debugging
+                        return null; // Skip invalid results
+                    }
+
+                    return (
+                        <div key={index} style={styles.resultItem}>
+                            <p><strong>Question {index + 1}:</strong> {result.question || 'No question text'}</p>
+                            <p>Your Answer: {result.userAnswer || 'Not answered'} {result.isCorrect ? '✅' : '❌'}</p>
+                            <p>Correct Answer: {result.correct_answer || 'No correct answer'}</p>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };
 
 export default ResultPage;
+
+// Inline styles for the component
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '20px',
+        fontFamily: 'Arial, sans-serif',
+    },
+    results: {
+        marginTop: '20px',
+    },
+    resultItem: {
+        marginBottom: '20px',
+        padding: '10px',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+    },
+};

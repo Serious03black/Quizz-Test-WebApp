@@ -1,0 +1,16 @@
+@import "tailwindcss";
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f4f7fa 0%, #e9ecef 100%);
+    color: #2d3436;
+    line-height: 1.6;
+}
+
+.exam-page {
+    padding: 20px;
+    text-align: center;
+    min-height: 100vh;
+}
