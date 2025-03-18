@@ -36,7 +36,7 @@ const App = () => {
                             }
                         />
                         <Route
-                            path="/result"
+                            path="/ResultPage"
                             element={
                                 <ProtectedRoute>
                                     <ResultPage />

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -246,7 +247,7 @@ const Footer = () => {
           variants={itemVariants}
           className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300 text-sm"
         >
-          <p>© 2025 CSMSS College of Engineering. All rights reserved.</p>
+          <p>© SHIVAYAN Enterprises</p>
         </motion.div>
       </div>
     </motion.footer>

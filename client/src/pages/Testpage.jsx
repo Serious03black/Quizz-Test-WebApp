@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +23,7 @@ const TestPage = () => {
             .get('http://localhost:5000/api/questions')
             .then((response) => {
                 setQuestions(response.data);
+                console.log(response.data);
                 setAnswers(new Array(response.data.length).fill(null));
                 setMarkedForReview(new Array(response.data.length).fill(false));
                 setIsLoading(false);
@@ -78,7 +80,7 @@ const TestPage = () => {
         axios
             .post('http://localhost:5000/api/submit', { answers })
             .then((response) => {
-                navigate('/result', { state: { results: response.data } });
+                navigate('/ResultPage', { state: { results: response.data } });
             })
             .catch((error) => console.error('Error submitting answers:', error));
     };
