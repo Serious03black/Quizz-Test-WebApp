@@ -114,7 +114,7 @@ const LandingPage = () => {
                                 <img
                                     src={company.logo}
                                     alt={`${company.name} logo`}
-                                    className="max-h-16 max-w-full object-contain mx-auto grayscale hover:grayscale-0 transition-all duration-300"
+                                    className="max-h- max-w-full object-contain mx-auto "
                                     onError={(e) => {
                                         e.target.src = "https://via.placeholder.com/150?text=Logo+Not+Found";
                                     }}

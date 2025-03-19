@@ -27,7 +27,6 @@ const Navigation = () => {
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Website', path: "https://www.csmssengg.org/" },
-        { name: 'Placement', path: '/placement' },
         { name: 'Contact Us', path: '/contactUs' },
     ];
 
