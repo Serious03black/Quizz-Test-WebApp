@@ -65,6 +65,12 @@ const ResultPage = () => {
                     >
                         Retake Test
                     </button>
+                    <button
+                        onClick={() => window.location.href=('https://www.csmssengg.org/')}
+                        className="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-300 transition-all duration-300"
+                    >
+                        Visit Official Website
+                    </button>
                 </div>
             </div>
         </div>
