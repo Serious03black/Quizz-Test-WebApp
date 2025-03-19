@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 const MCQForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -12,7 +11,7 @@ const MCQForm = () => {
         college: '',
         domain: '',
         contactNumber: '',
-        InterestedOrNot: 'select',
+        IntrestedOrNot: ''
     });
     const [showConfetti, setShowConfetti] = useState(false);
 
@@ -158,8 +157,8 @@ const MCQForm = () => {
                     {/* Interested in Admission? */}
                     <div className="relative">
                         <select
-                            name="InterestedOrNot"
-                            value={formData.InterestedOrNot}
+                            name="IntrestedOrNot"
+                            value={formData.IntrestedOrNot}
                             onChange={handleChange}
                             className="peer w-full px-4 py-3 bg-white border-2 border-teal-300 text-teal-900 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-300 rounded-lg appearance-none"
                             required
@@ -172,7 +171,7 @@ const MCQForm = () => {
                         <label
                             className="absolute left-4 top-0 text-teal-600 text-sm transition-all duration-300 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-teal-400 peer-focus:top-0 peer-focus:text-sm peer-focus:text-teal-600"
                         >
-                            Interested in Admission?
+                            Intrested to take Know More about CSMSS?
                         </label>
                         <svg
                             className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-teal-500"

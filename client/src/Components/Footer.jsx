@@ -114,12 +114,6 @@ const Footer = () => {
     visible: { opacity: 1, y: 0 }
   };
 
-  // Waste management SVG icons
-  const WasteIcon = () => (
-    <svg className="w-6 h-6 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4M9 7v14m6-14v14" />
-    </svg>
-  );
 
   const LinksIcon = () => (
     <svg className="w-6 h-6 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,10 +136,10 @@ const Footer = () => {
   return (
     <motion.footer
       variants={containerVariants}
-      initial="hidden"
+      initial="visible"
       whileInView="visible"
-      viewport={{ once: true }}
-      className="relative bg-black py-12 font-poppins overflow-hidden"
+      viewport={{ once: false }}
+      className="relative bg-black py-30 font-poppins overflow-hidden"
     >
       {/* Three.js Canvas for Footer */}
       <canvas ref={canvasRef} className="absolute top-0 left-0 z-0 w-full h-full pointer-events-none opacity-70" />
@@ -154,7 +148,6 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <motion.div variants={itemVariants}>
             <div className="flex items-center">
-              <WasteIcon />
               <span className="text-3xl font-pacifico text-white">CSMSS College of Engineering</span>
             </div>
             <p className="mt-4 text-gray-300 text-sm">Pioneering excellence in education and innovation</p>
@@ -247,7 +240,8 @@ const Footer = () => {
           variants={itemVariants}
           className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300 text-sm"
         >
-          <p>© SHIVAYAN Enterprises</p>
+          <p>Csmss Chh Shahu College Of Engineering</p>
+          <p>© SHIVAYAN Enterprises : All CopyRight Reserve </p>
         </motion.div>
       </div>
     </motion.footer>

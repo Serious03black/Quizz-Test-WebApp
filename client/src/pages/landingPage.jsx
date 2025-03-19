@@ -9,7 +9,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ExamFrom from '../Components/examForm';
 
 gsap.registerPlugin(ScrollTrigger);
-
 const LandingPage = () => {
     const navigate = useNavigate();
     const canvasRef = useRef(null);

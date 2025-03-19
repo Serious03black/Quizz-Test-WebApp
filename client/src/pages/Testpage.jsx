@@ -81,6 +81,8 @@ const TestPage = () => {
             .post('http://localhost:5000/api/submit', { answers })
             .then((response) => {
                 navigate('/ResultPage', { state: { results: response.data } });
+                console.log(response.data);
+                
             })
             .catch((error) => console.error('Error submitting answers:', error));
     };
@@ -138,7 +140,7 @@ const TestPage = () => {
             {/* Header */}
             <header className="test-header bg-teal-700 text-white py-6 px-4 shadow-lg">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <h1 className="text-3xl font-bold">CSMSS MCQ Test</h1>
+                    <h1 className="text-3xl font-bold">MHTCET Mock Test</h1>
                     <div className="flex items-center space-x-4">
                         <div className="timer text-lg font-semibold" role="timer" aria-live="polite">
                             Time Left: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}

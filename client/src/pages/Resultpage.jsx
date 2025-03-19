@@ -25,7 +25,6 @@ const ResultPage = () => {
                         <span className="text-teal-600">{questionResults.length}</span>.
                     </p>
                 </div>
-
                 {/* Breakdown of Results */}
                 <div className="results-breakdown mb-8">
                     <h2 className="text-2xl font-bold text-teal-800 mb-4">Detailed Breakdown</h2>
@@ -45,14 +44,13 @@ const ResultPage = () => {
                                 </p>
                                 {!question.isCorrect && (
                                     <p className="text-gray-700">
-                                        Correct Answer: <span className="font-semibold text-green-600">{question.correct_answer}</span>
+                                        Correct Answer: <span className="font-semibold text-green-600">{question.answer}</span>
                                     </p>
                                 )}
                             </div>
                         ))}
                     </div>
                 </div>
-
                 {/* Navigation Buttons */}
                 <div className="flex justify-center space-x-4">
                     <button

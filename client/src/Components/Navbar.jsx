@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import csmssLogo from '../assets/csmssengg.jpg'; // Left logo
 import l1Logo from '../assets/l1.jpg'; // Right logo
 import './Nav.css'; // For custom CSS animations and glassmorphism
-
 const Navigation = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,7 +23,6 @@ const Navigation = () => {
         { name: 'Placement', path: '/placement' },
         { name: 'Contact Us', path: '/contact-us' },
     ];
-
     return (
         <>
             {/* Navigation Bar */}

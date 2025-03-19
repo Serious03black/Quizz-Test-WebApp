@@ -36,6 +36,7 @@ app.post('/api/submit', (req, res) => {
     if (!answers || !Array.isArray(answers)) {
         return res.status(400).json({ error: 'Answers array is missing or invalid' });
     }
+    console.log('req.body =' ,req.body);//
     const sql = 'SELECT * FROM q2';
     db.query(sql, (err, result) => {
         if (err) throw err;
@@ -44,7 +45,11 @@ app.post('/api/submit', (req, res) => {
         }
         let score = 0;
         const results = result.map((question, index) => {
-            const isCorrect = question.correct_answer === answers[index];
+            const isCorrect = question.answer ===   answers[index];
+            // console.log("cA",question.answer);
+            // console.log("uA",answers[index]);
+            // console.log(isCorrect);
+            
             if (isCorrect) score++;
             return {
                 ...question,
@@ -55,9 +60,9 @@ app.post('/api/submit', (req, res) => {
         res.json({ score, results });
     });
 });
-
 // Save student information
 app.post('/api/student', (req, res) => {
+    console.log(req.body);
     const { name, address, college, domain, contactNumber,IntrestedOrNot } = req.body;
 
     // Insert student info into the database
