@@ -24,9 +24,9 @@ const MCQForm = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:5000/api/student', formData);
+            const response = await axios.post('http://localhost:5000/api/students', formData);
             console.log('Student data saved:', response.data);
-
+            
             localStorage.setItem('studentInfo', JSON.stringify(formData));
             setShowConfetti(true); // Show confetti (though Confetti is commented out in the original code)
             setTimeout(() => {

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import * as THREE from 'three';
+import AdminPage from './Adminpage';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -157,6 +158,7 @@ const Footer = () => {
             <div className="flex items-center">
               <LinksIcon />
               <h3 className="text-lg font-semibold text-white">Quick Links</h3>
+              <a href="/AdminPage">AdminPage</a>
             </div>
             <ul className="mt-4 space-y-2">
               {['features', 'pricing', 'contact'].map((item) => (
