@@ -118,7 +118,7 @@ app.delete('/api/questions/:id', (req, res) => {
   });
 });
 app.delete('/api/questions', (req, res) => {
-  const sql = 'TRUNCATE TABLE q2;';
+  const sql = ' TRUNCATE TABLE q2;';
   db.query(sql, (err, result) => {
     if (err) return res.status(500).send(err);
     res.send('Questions deleted successfully');
