@@ -13,8 +13,8 @@ const AdminPage = () => {
   const [questionFilter, setQuestionFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('students');
 
-  const ADMIN_ID = 'admin123';
-  const ADMIN_PASSWORD = 'password123';
+  const ADMIN_ID = 'ganpatKambale';
+  const ADMIN_PASSWORD = 'ganpat';
 
   const handleLogin = (e) => {
     e.preventDefault();
