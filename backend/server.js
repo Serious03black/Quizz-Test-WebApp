@@ -13,10 +13,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve u
 
 // MySQL connection
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "tiger",
-  database: "mcqApp",
+  host: process.env.DB_HOST ,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: PROCESS.rnv.DB_NAME,
 });
 
 db.connect((err) => {
