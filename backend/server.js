@@ -1,5 +1,4 @@
 const express = require('express');
-require('dotenv').config();
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -10,13 +9,14 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded images
 
 // MySQL connection
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "tiger",
-  database:"mcqApp",
+  database: "mcqApp",
 });
 
 db.connect((err) => {
@@ -30,11 +30,19 @@ const storage = multer.diskStorage({
     cb(null, './uploads');
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage }).fields([
+  { name: 'file', maxCount: 1 }, // For Excel file
+  { name: 'question_image', maxCount: 1 },
+  { name: 'option1_image', maxCount: 1 },
+  { name: 'option2_image', maxCount: 1 },
+  { name: 'option3_image', maxCount: 1 },
+  { name: 'option4_image', maxCount: 1 },
+]);
 
 // Fetch all students
 app.get('/api/students', (req, res) => {
@@ -46,25 +54,33 @@ app.get('/api/students', (req, res) => {
 });
 
 // Upload questions from Excel
-app.post('/api/upload-questions', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
+app.post('/api/upload-questions', upload, (req, res) => {
+  const files = req.files || {};
+  const file = files['file'] ? files['file'][0] : null;
+
+  if (!file) {
+    return res.status(400).send('No Excel file uploaded.');
   }
 
-  const filePath = path.join(__dirname, 'uploads', req.file.filename);
+  const filePath = path.join(__dirname, 'uploads', file.filename);
   const workbook = xlsx.readFile(filePath);
   const sheetName = workbook.SheetNames[0];
   const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
   const sql = `
-    INSERT INTO q2 (question, option1, option2, option3, option4, answer)
+    INSERT INTO q2 (question, option1, option2, option3, option4, answer, question_image, option1_image, option2_image, option3_image, option4_image)
     VALUES ?
     ON DUPLICATE KEY UPDATE
       option1 = VALUES(option1),
       option2 = VALUES(option2),
       option3 = VALUES(option3),
       option4 = VALUES(option4),
-      answer = VALUES(answer)
+      answer = VALUES(answer),
+      question_image = VALUES(question_image),
+      option1_image = VALUES(option1_image),
+      option2_image = VALUES(option2_image),
+      option3_image = VALUES(option3_image),
+      option4_image = VALUES(option4_image)
   `;
 
   const values = data.map((row) => [
@@ -74,6 +90,11 @@ app.post('/api/upload-questions', upload.single('file'), (req, res) => {
     row.option3,
     row.option4,
     row.answer,
+    files['question_image'] ? `/uploads/${files['question_image'][0].filename}` : null,
+    files['option1_image'] ? `/uploads/${files['option1_image'][0].filename}` : null,
+    files['option2_image'] ? `/uploads/${files['option2_image'][0].filename}` : null,
+    files['option3_image'] ? `/uploads/${files['option3_image'][0].filename}` : null,
+    files['option4_image'] ? `/uploads/${files['option4_image'][0].filename}` : null,
   ]);
 
   db.query(sql, [values], (err, result) => {
@@ -92,17 +113,34 @@ app.get('/api/questions', (req, res) => {
 });
 
 // Edit a question
-app.put('/api/questions/:id', (req, res) => {
+app.put('/api/questions/:id', upload, (req, res) => {
   const { id } = req.params;
   const { question, option1, option2, option3, option4, answer } = req.body;
+  const files = req.files || {};
 
   const sql = `
     UPDATE q2
-    SET question = ?, option1 = ?, option2 = ?, option3 = ?, option4 = ?, answer = ?
+    SET question = ?, option1 = ?, option2 = ?, option3 = ?, option4 = ?, answer = ?,
+        question_image = ?, option1_image = ?, option2_image = ?, option3_image = ?, option4_image = ?
     WHERE id = ?
   `;
 
-  db.query(sql, [question, option1, option2, option3, option4, answer, id], (err, result) => {
+  const values = [
+    question,
+    option1,
+    option2,
+    option3,
+    option4,
+    answer,
+    files['question_image'] ? `/uploads/${files['question_image'][0].filename}` : req.body.question_image,
+    files['option1_image'] ? `/uploads/${files['option1_image'][0].filename}` : req.body.option1_image,
+    files['option2_image'] ? `/uploads/${files['option2_image'][0].filename}` : req.body.option2_image,
+    files['option3_image'] ? `/uploads/${files['option3_image'][0].filename}` : req.body.option3_image,
+    files['option4_image'] ? `/uploads/${files['option4_image'][0].filename}` : req.body.option4_image,
+    id,
+  ];
+
+  db.query(sql, values, (err, result) => {
     if (err) return res.status(500).send(err);
     res.send('Question updated successfully');
   });
@@ -117,8 +155,9 @@ app.delete('/api/questions/:id', (req, res) => {
     res.send('Question deleted successfully');
   });
 });
+
 app.delete('/api/questions', (req, res) => {
-  const sql = 'TRUNCATE TABLE q2;';
+  const sql = 'TRUNCATE TABLE q2';
   db.query(sql, (err, result) => {
     if (err) return res.status(500).send(err);
     res.send('Questions deleted successfully');
@@ -187,14 +226,6 @@ app.post('/api/submit', (req, res) => {
         userAnswer: answers[index],
         isCorrect,
       };
-
-
-
-
-
-
-
-
     });
 
     // Update student's marks in the students table
@@ -233,8 +264,8 @@ app.post('/api/submit', (req, res) => {
   });
 });
 
-// Start the server// Start the server
+// Start the server
 const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

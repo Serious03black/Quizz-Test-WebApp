@@ -186,21 +186,46 @@ const TestPage = () => {
           <h2 className="text-xl font-semibold text-teal-800 mb-4">
             Question {currentQuestionIndex + 1} of {questions.length}
           </h2>
-          <p className="text-lg text-gray-800 mb-6">{currentQuestion.question}</p>
+          <div className="mb-6">
+            <p className="text-lg text-gray-800">{currentQuestion.question}</p>
+            {currentQuestion.question_image && (
+              <img
+                src={`http://localhost:5000${currentQuestion.question_image}`}
+                alt="Question"
+                className="mt-2 max-w-full h-auto rounded-lg"
+                onError={(e) => (e.target.src = '/path/to/fallback-image.png')} // Fallback image
+              />
+            )}
+          </div>
           <div className="options-container space-y-4">
-            {[currentQuestion.option1, currentQuestion.option2, currentQuestion.option3, currentQuestion.option4].map((option, index) => (
+            {[
+              { text: currentQuestion.option1, image: currentQuestion.option1_image },
+              { text: currentQuestion.option2, image: currentQuestion.option2_image },
+              { text: currentQuestion.option3, image: currentQuestion.option3_image },
+              { text: currentQuestion.option4, image: currentQuestion.option4_image },
+            ].map((option, index) => (
               <label key={index} className="flex items-center space-x-3 cursor-pointer">
                 <input
                   type="radio"
                   name="answer"
-                  value={option}
-                  checked={answers[currentQuestionIndex] === option}
-                  onChange={() => handleAnswerChange(option)}
+                  value={option.text}
+                  checked={answers[currentQuestionIndex] === option.text}
+                  onChange={() => handleAnswerChange(option.text)}
                   className="form-radio h-5 w-5 text-teal-600 focus:ring-teal-500"
-                  aria-checked={answers[currentQuestionIndex] === option}
+                  aria-checked={answers[currentQuestionIndex] === option.text}
                   tabIndex={0}
                 />
-                <span className="text-gray-700">{option}</span>
+                <div className="flex flex-col">
+                  <span className="text-gray-700">{option.text}</span>
+                  {option.image && (
+                    <img
+                      src={`http://localhost:5000${option.image}`}
+                      alt={`Option ${index + 1}`}
+                      className="mt-1 max-w-xs h-auto rounded-lg"
+                      onError={(e) => (e.target.src = '/path/to/fallback-image.png')} // Fallback image
+                    />
+                  )}
+                </div>
               </label>
             ))}
           </div>

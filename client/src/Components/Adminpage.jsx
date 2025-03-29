@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Added axios import
+import navbar from '../Components/Navbar'
 const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginData, setLoginData] = useState({ id: '', password: '' });
@@ -12,10 +13,9 @@ const AdminPage = () => {
   const [studentFilter, setStudentFilter] = useState('all');
   const [questionFilter, setQuestionFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('students');
-
+  
   const ADMIN_ID = 'ganpatKambale';
   const ADMIN_PASSWORD = 'ganpat';
-
   const handleLogin = (e) => {
     e.preventDefault();
     if (loginData.id === ADMIN_ID && loginData.password === ADMIN_PASSWORD) {
@@ -24,7 +24,6 @@ const AdminPage = () => {
       alert('Invalid credentials');
     }
   };
-
   const fetchStudents = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/students');
@@ -74,12 +73,18 @@ const AdminPage = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      alert('Please select a file');
+    if (!file || !file['file']) {
+      alert('Please select an Excel file');
       return;
     }
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file['file']);
+    if (file.question_image) formData.append('question_image', file.question_image);
+    if (file.option1_image) formData.append('option1_image', file.option1_image);
+    if (file.option2_image) formData.append('option2_image', file.option2_image);
+    if (file.option3_image) formData.append('option3_image', file.option3_image);
+    if (file.option4_image) formData.append('option4_image', file.option4_image);
+  
     try {
       await axios.post('http://localhost:5000/api/upload-questions', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -92,10 +97,44 @@ const AdminPage = () => {
       alert('Failed to upload questions');
     }
   };
-
   const handleEdit = async (question) => {
+    const formData = new FormData();
+    formData.append('question', question.question);
+    formData.append('option1', question.option1);
+    formData.append('option2', question.option2);
+    formData.append('option3', question.option3);
+    formData.append('option4', question.option4);
+    formData.append('answer', question.answer);
+    if (question.question_image instanceof File) {
+      formData.append('question_image', question.question_image);
+    } else {
+      formData.append('question_image', question.question_image);
+    }
+    if (question.option1_image instanceof File) {
+      formData.append('option1_image', question.option1_image);
+    } else {
+      formData.append('option1_image', question.option1_image);
+    }
+    if (question.option2_image instanceof File) {
+      formData.append('option2_image', question.option2_image);
+    } else {
+      formData.append('option2_image', question.option2_image);
+    }
+    if (question.option3_image instanceof File) {
+      formData.append('option3_image', question.option3_image);
+    } else {
+      formData.append('option3_image', question.option3_image);
+    }
+    if (question.option4_image instanceof File) {
+      formData.append('option4_image', question.option4_image);
+    } else {
+      formData.append('option4_image', question.option4_image);
+    }
+  
     try {
-      await axios.put(`http://localhost:5000/api/questions/${question.id}`, question);
+      await axios.put(`http://localhost:5000/api/questions/${question.id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       alert('Question updated successfully');
       fetchQuestions();
       setSelectedQuestion(null);
@@ -128,6 +167,7 @@ const AdminPage = () => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <navbar />
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
           <h1 className="text-2xl font-bold mb-6">Admin Login</h1>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -272,20 +312,37 @@ const AdminPage = () => {
               </div>
             </div>
 
-            <div className="mb-6 flex items-center gap-4">
-              <input
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={(e) => setFile(e.target.files[0])}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              <button
-                onClick={handleUpload}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Upload Questions
-              </button>
-            </div>
+            <div className="mb-6 flex flex-col gap-4">
+  <input
+    type="file"
+    accept=".xlsx,.xls"
+    onChange={(e) => setFile(e.target.files[0])}
+    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+  />
+  <input
+    type="file"
+    accept="image/*"
+    name="question_image"
+    onChange={(e) => setFile((prev) => ({ ...prev, question_image: e.target.files[0] }))}
+    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+  />
+  {['option1_image', 'option2_image', 'option3_image', 'option4_image'].map((field) => (
+    <input
+      key={field}
+      type="file"
+      accept="image/*"
+      name={field}
+      onChange={(e) => setFile((prev) => ({ ...prev, [field]: e.target.files[0] }))}
+      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+    />
+  ))}
+  <button
+    onClick={handleUpload}
+    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+  >
+    Upload Questions
+  </button>
+</div>
 
             {filteredQuestions.length > 0 ? (
               <div className="overflow-x-auto">
@@ -301,81 +358,115 @@ const AdminPage = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredQuestions.map((question) => (
-                      <tr key={question.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">{question.question || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{question.option1 || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{question.option2 || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{question.option3 || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{question.option4 || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{question.answer || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap flex gap-2">
-                          <button
-                            onClick={() => setSelectedQuestion(question)}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(question.id)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  <thead className="bg-gray-50">
+  <tr>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Q. Image</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Option 1</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">O1 Image</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Option 2</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">O2 Image</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Option 3</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">O3 Image</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Option 4</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">O4 Image</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+  </tr>
+</thead>
+<tbody className="bg-white divide-y divide-gray-200">
+  {filteredQuestions.map((question) => (
+    <tr key={question.id}>
+      <td className="px-6 py-4 whitespace-nowrap">{question.question || 'N/A'}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {question.question_image ? <img src={question.question_image} alt="Q" className="h-10 w-10 object-cover" /> : 'N/A'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">{question.option1 || 'N/A'}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {question.option1_image ? <img src={question.option1_image} alt="O1" className="h-10 w-10 object-cover" /> : 'N/A'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">{question.option2 || 'N/A'}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {question.option2_image ? <img src={question.option2_image} alt="O2" className="h-10 w-10 object-cover" /> : 'N/A'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">{question.option3 || 'N/A'}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {question.option3_image ? <img src={question.option3_image} alt="O3" className="h-10 w-10 object-cover" /> : 'N/A'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">{question.option4 || 'N/A'}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {question.option4_image ? <img src={question.option4_image} alt="O4" className="h-10 w-10 object-cover" /> : 'N/A'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">{question.answer || 'N/A'}</td>
+      <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+        <button onClick={() => setSelectedQuestion(question)} className="text-blue-600 hover:text-blue-800">
+          Edit
+        </button>
+        <button onClick={() => handleDelete(question.id)} className="text-red-600 hover:text-red-800">
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
                 </table>
               </div>
             ) : (
               <p className="text-gray-500">No questions found</p>
             )}
 
-            {selectedQuestion && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
-                  <h3 className="text-xl font-semibold mb-4">Edit Question</h3>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleEdit(selectedQuestion);
-                    }}
-                    className="space-y-4"
-                  >
-                    {['question', 'option1', 'option2', 'option3', 'option4', 'answer'].map((field) => (
-                      <div key={field}>
-                        <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
-                        <input
-                          type="text"
-                          value={selectedQuestion[field] || ''}
-                          onChange={(e) =>
-                            setSelectedQuestion({ ...selectedQuestion, [field]: e.target.value })
-                          }
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                        />
-                      </div>
-                    ))}
-                    <div className="flex justify-end gap-4">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedQuestion(null)}
-                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+{selectedQuestion && (
+  <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
+      <h3 className="text-xl font-semibold mb-4">Edit Question</h3>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleEdit(selectedQuestion);
+        }}
+        className="space-y-4"
+      >
+        {['question', 'option1', 'option2', 'option3', 'option4', 'answer'].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+            <input
+              type="text"
+              value={selectedQuestion[field] || ''}
+              onChange={(e) => setSelectedQuestion({ ...selectedQuestion, [field]: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            />
+          </div>
+        ))}
+        {['question_image', 'option1_image', 'option2_image', 'option3_image', 'option4_image'].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium text-gray-700 capitalize">{field.replace('_', ' ')}</label>
+            {selectedQuestion[field] && (
+              <img src={selectedQuestion[field]} alt={field} className="h-20 w-20 object-cover mb-2" />
             )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setSelectedQuestion({ ...selectedQuestion, [field]: e.target.files[0] })}
+              className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+          </div>
+        ))}
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => setSelectedQuestion(null)}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
           </div>
         )}
       </div>
